@@ -104,22 +104,7 @@
               "target": "_self"
             }
           ]
-        },
-        {
-          "title": "疫情防控",
-          "icon": "fa fa-heart",
-          "href": "",
-          "target": "_self",
-          "child": [
-            {
-              "title": "健康汇报",
-              "href": "health2",
-              "icon": "fa fa-heart",
-              "target": "_self"
-            }
-          ]
         }
-
 
       ]
     }

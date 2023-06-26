@@ -173,21 +173,7 @@
         }
       ]
     },
-    {
-      "title": "疫情防控",
-      "icon": "fa fa-slideshare",
-      "href": "",
-      "target": "_self",
-      "child": [
-        {
-          "title": "健康汇报",
-          "href": "health",
-          "icon": "fa fa-heart",
-          "target": "_self"
-        }
-      ]
-    }
-  ,
+
     {
       "title": "其它管理",
       "icon": "fa fa-slideshare",
