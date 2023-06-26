@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.NoticeMapper">
+    <select id="getNoticeList" parameterType="com.xlk.common.vo.NoticeQuery" resultType="notice">
+        select * from emp_notice
+        <include refid="getNoticeListWhere"></include>
+        limit #{start},#{limit}
+    </select>
+    <select id="countNoticeList" parameterType="com.xlk.common.vo.NoticeQuery" resultType="long">
+        select count(1) from emp_notice
+        <include refid="getNoticeListWhere"></include>
+    </select>
+
+    <insert id="addNotice" parameterType="notice">
+        insert into emp_notice
+        (message,user_name,start_date,create_date)
+        values
+        (#{message},#{user_name},#{start_date},#{create_date})
+    </insert>
+
+    <delete id="deleteNoticeById" parameterType="String">
+        delete from emp_notice where id in (${ids})
+    </delete>
+
+
+
+
+
+    <sql id="getNoticeListWhere">
+        <where>
+            <if test="message!=null and message!=''">
+                message like CONCAT('%',#{message},'%')
+            </if>
+            <if test="start_date!=null and start_date!=''">
+                and start_date=#{start_date}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

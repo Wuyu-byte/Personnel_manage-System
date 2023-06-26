@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.RewardMapper">
+
+    <select id="getRewardList" parameterType="com.xlk.common.vo.RewardQuery" resultType="reward">
+        select * from emp_reward
+        <include refid="getRewardListWhere"></include>
+        limit #{start},#{limit}
+    </select>
+
+    <select id="countRewardList" parameterType="com.xlk.common.vo.RewardQuery" resultType="long">
+        select count(1) from emp_reward
+        <include refid="getRewardListWhere"></include>
+    </select>
+
+
+    <insert id="addReward" parameterType="reward">
+        insert into emp_reward
+        (department_name,employee_name,theme,status,price,message)
+        values
+        (#{department_name},#{employee_name},#{theme},#{status},#{price},#{message})
+    </insert>
+
+    <select id="queryById" resultType="reward" parameterType="int">
+        select * from emp_reward where id=#{id}
+    </select>
+
+    <update id="updateReward" parameterType="reward">
+        update emp_reward
+        set department_name=#{department_name},
+        employee_name=#{employee_name},
+        theme=#{theme},
+        status=#{status},
+        price=#{price},
+        message=#{message}
+        where id=#{id}
+    </update>
+
+
+    <delete id="deleteRewardById" parameterType="String">
+        delete from emp_reward where id in (${ids})
+    </delete>
+
+    <sql id="getRewardListWhere">
+        <where>
+            <if test="employee_name!=null and employee_name!=''">
+                employee_name=#{employee_name}
+            </if>
+            <if test="theme!=null and theme!=''">
+                and theme=#{theme}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

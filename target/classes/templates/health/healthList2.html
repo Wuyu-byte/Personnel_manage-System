@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>健康汇报</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{lib/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+
+</head>
+<body>
+<style>
+    .layui-table-cell {
+        text-align: center;
+        height: auto;
+        white-space: normal;
+    }
+
+    .layui-table img {
+        max-width: 110px;
+    }
+</style>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="form-search">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">打卡日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="createdate" autocomplete="off" class="layui-input date">
+                            </div>
+                        </div>
+
+                        <button  id="btn-search" lay-submit lay-filter="btn-search-filter" type="button"
+                                 class="layui-btn layui-btn-radius layui-btn-normal">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button  id="btn-reset" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                            <i class="layui-icon layui-icon-fonts-clear"></i>
+                            重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add">上传日报</button>
+<!--                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>-->
+            </div>
+        </script>
+
+        <table class="layui-hide" id="health-table" lay-filter="health-table-Filter"></table>
+
+        <script type="text/html" id="table-edit">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+<!--            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
+        </script>
+
+    </div>
+</div>
+<script th:src="@{lib/layui/layui.js}" charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<script type="text/html" id="imgjkm">
+    <a href={{d.image}} target="_blank" title="点击查看"><img src={{d.image}} style="height:110px;"/></a>
+<!--    <img src="{{d.image}}" style="height: 110px">-->
+</script>
+<script type="text/html" id="imgxcm" >
+    <a href={{d.image2}} target="_blank" title="点击查看"><img src={{d.image2}} style="height:110px;"/></a>
+</script>
+<script>
+    function refreshTable() {
+        $("#form-reset").click();
+        $("#btn-search").click();
+    }
+    function add_rand(){
+        rand = Math.random();
+        $('image').each(function(){
+            href = $(this).attr('href');
+            if (href.length == 0 || href.indexOf('javascript') > -1) return;
+            else if(href.indexOf('?') > -1){
+                $(this).attr('href', href + '&' + rand);
+            }else{
+                $(this).attr('href', href + '?' + rand);
+            }
+        });
+    }
+
+
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate=layui.laydate,
+            table = layui.table;
+        add_rand();
+        laydate.render({
+            elem: '.date' //指定元素
+        });
+
+
+        table.render({
+            elem: '#health-table',
+            url: '/health2/list',
+            toolbar: '#toolbarDemo',
+            cols: [
+                [
+                    {type: "checkbox", width: 50},
+                    {field: 'createdate', width: 200, title: '上报日期', sort: true, align: "center"},
+                    {field: 'employee_name', width: 110, title: '员工姓名', align: "center"},
+                    {field: 'temperature', width: 110, title: '员工温度', align: "center"},
+                    {field: 'image', title: '健康码', width: 300, align: "center",templet: "#imgjkm",style: "height:110px"},
+                    {field: 'image2', width: 300, title: '行程码', align: "center",templet: "#imgxcm",style: "height:110px"},
+                    {title: '操作', minWidth: 50, toolbar: '#table-edit', align: "center"}
+                ]
+            ],
+            limits: [1, 5, 10, 30, 50, 100],
+            limit: 10,
+            page: true,
+        });
+
+
+        //监听表单提交
+        form.on('submit(btn-search-filter)', function (data) {
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            table.reload('health-table', {
+                where: { //设定异步数据接口的额外参数，任意设
+                    employee_name: data.field.employee_name,
+                    createdate:data.field.createdate
+
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    //     /**
+    //      * toolbar监听事件
+    //      */
+        //添加和删除功能
+        table.on('toolbar(health-table-Filter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '上传日报',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['75%', '90%'],
+                    content: '/health2/HealthAdd',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+        table.on('tool(health-table-Filter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '日报修改',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['75%', '90%'],
+                    content: '/health2/get/'+data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

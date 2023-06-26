@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.AttendanceMapper">
+    <select id="getAttendanceList" parameterType="com.xlk.common.vo.AttendanceQuery" resultType="attendance">
+        select * from emp_attendance
+        <include refid="getAttendanceListWhere"></include>
+         limit #{start},#{limit}
+    </select>
+    <select id="countAttendanceList" parameterType="com.xlk.common.vo.AttendanceQuery" resultType="long">
+        select count(1) from emp_attendance
+        <include refid="getAttendanceListWhere"></include>
+    </select>
+
+    <insert id="addAttendance" parameterType="attendance">
+        insert into emp_attendance
+        (startDate,employee_name,starttime,endtime,worktime,status)
+        values
+        (#{startDate},#{employee_name},#{starttime},#{endtime},#{worktime},#{status})
+    </insert>
+
+    <select id="queryById" parameterType="int" resultType="attendance">
+        select * from emp_attendance where id=#{id}
+    </select>
+
+    <update id="updateAttendance" parameterType="attendance">
+        update emp_attendance
+        set startDate=#{startDate},
+        employee_name=#{employee_name},
+        starttime=#{starttime},
+        endtime=#{endtime},
+        worktime=#{worktime},
+        status=#{status}
+        where id=#{id}
+    </update>
+
+    <delete id="deleteAttendanceById" parameterType="String">
+        delete from emp_attendance where id in (${ids})
+    </delete>
+
+    <select id="queryByEmpAndDate" resultType="attendance">
+        select * from emp_attendance where employee_name=#{name} and startDate=#{date}
+    </select>
+
+
+    <sql id="getAttendanceListWhere">
+        <where>
+            <if test="employee_name!=null and employee_name!=''">
+                employee_name like CONCAT('%',#{employee_name},'%')
+            </if>
+            <if test="startDate!=null and startDate!=''">
+                and startDate=#{startDate}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

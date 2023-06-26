@@ -1,0 +1,127 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/empwelcome"
+  },
+  "logoInfo": {
+    "title": "XLK_zcx",
+    "image": "images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "常规管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "员工信息",
+          "href": "",
+          "icon": "fa fa-group",
+          "target": "_self",
+          "child": [
+            {
+              "title": "员工列表",
+              "href": "emp2",
+              "icon": "fa fa-user",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "我的薪资",
+          "href": "",
+          "icon": "fa fa-btc",
+          "target": "_self",
+          "child": [
+            {
+              "title": "薪资信息",
+              "href": "empsalary",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "我的考勤",
+          "href": "",
+          "icon": "fa fa-calendar",
+          "target": "_self",
+          "child": [
+            {
+              "title": "考勤信息",
+              "href": "empattendance",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "我的请假",
+          "href": "",
+          "icon": "fa fa-bed",
+          "target": "_self",
+          "child": [
+            {
+              "title": "请假信息",
+              "href": "empleave",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "我的奖惩",
+          "href": "",
+          "icon": "fa fa-gavel",
+          "target": "_self",
+          "child": [
+            {
+              "title": "奖惩信息",
+              "href": "empreward",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "文件上传",
+          "href": "fileUpLoad",
+          "icon": "fa fa-cloud-upload",
+          "target": "_self"
+        },
+        {
+          "title": "公告查看",
+          "href": "",
+          "icon": "fa fa-navicon",
+          "target": "_self",
+          "child": [
+            {
+              "title": "公告信息",
+              "href": "notice2",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "疫情防控",
+          "icon": "fa fa-heart",
+          "href": "",
+          "target": "_self",
+          "child": [
+            {
+              "title": "健康汇报",
+              "href": "health2",
+              "icon": "fa fa-heart",
+              "target": "_self"
+            }
+          ]
+        }
+
+
+      ]
+    }
+  ]
+}

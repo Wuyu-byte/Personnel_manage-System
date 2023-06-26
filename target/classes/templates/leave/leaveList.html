@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>请假信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{lib/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="form-search">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">员工名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="employee_name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">请假原因</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="leave_message" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <button  id="btn-search" lay-submit lay-filter="btn-search-filter" type="button"
+                                 class="layui-btn layui-btn-radius layui-btn-normal">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button  id="btn-reset" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                            <i class="layui-icon layui-icon-fonts-clear"></i>
+                            重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add">考勤补录</button>-->
+<!--                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>-->
+            </div>
+        </script>
+
+        <table class="layui-hide" id="leave-table" lay-filter="leave-table-Filter"></table>
+
+        <script type="text/html" id="table-edit">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">审批</a>
+<!--            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
+        </script>
+
+    </div>
+</div>
+<script th:src="@{lib/layui/layui.js}" charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<script>
+    function convertStatus(data) {
+        if (data.status == '1') {
+
+            return '<a class="layui-btn layui-btn-xs layui-btn-warm">通过</a>';
+        } else if (data.status == '0') {
+            return '<a class="layui-btn layui-btn-xs layui-btn-normal">待审批</a>';
+        } else if(data.status=='-1'){
+            return '<a class="layui-btn layui-btn-xs layui-btn-danger">未通过</a>';
+        }
+    }
+
+</script>
+
+<script>
+    function refreshTable() {
+        $("#form-reset").click();
+        $("#btn-search").click();
+    }
+
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate=layui.laydate,
+            table = layui.table;
+
+        table.render({
+            elem: '#leave-table',
+            url: '/leave/list',
+            toolbar: '#toolbarDemo',
+            cols: [
+                [
+                    // {type: "checkbox", width: 50},
+                    {field: 'employee_name', width: 110, title: '员工姓名', sort: true, align: "center"},
+                    {field: 'leave_message', width: 150, title: '请假原因', align: "center"},
+                    {field: 'startDate', width: 150, title: '开始时间', align: "center"},
+                    {field: 'endDate', title: '结束时间', width: 150, align: "center"},
+                    {field: 'status', width: 90, title: '状态', templet: convertStatus, align: "center"},
+                    {field: 'subtime', width: 200, title: '提交时间', align: "center"},
+                    {field: 'oktime', width: 200, title: '审批时间', align: "center"},
+                    {field: 'endmessage', width: 100, title: '审批原因', align: "center"},
+                    {title: '操作', minWidth: 50, toolbar: '#table-edit', align: "center"}
+                ]
+            ],
+            limits: [1, 5, 10, 30, 50, 100],
+            limit: 10,
+            page: true,
+        });
+
+
+        //监听表单提交
+        form.on('submit(btn-search-filter)', function (data) {
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            table.reload('leave-table', {
+                where: { //设定异步数据接口的额外参数，任意设
+                    employee_name: data.field.employee_name,
+                    leave_message:data.field.leave_message
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        table.on('tool(leave-table-Filter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '审批请假',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['50%', '70%'],
+                    content: '/leave/'+data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+
+            //单个员工的删除功能
+            else if (obj.event === 'delete') {
+                //提示框
+                layer.confirm('请确认删除该员工考勤吗:'+data.employee_name+" ?", {icon: 3, title:'确认'}, function (index) {
+                    //异步删除,成功提示,刷新表格
+                    url="[[@{/}]]"+"attendance/delete/"+data.id;
+                    var params={
+                        _method:"DELETE"
+                    }
+                    $.post(url,params,function (res) {
+                        if(res.code==0)
+                        {
+                            layer.msg(res.message,{icon:1,title:"操作结果"});
+                            refreshTable();
+                        }
+                    })
+
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.SalaryMapper">
+    <select id="getSalaryList" parameterType="com.xlk.common.vo.SalaryQuery" resultType="salary">
+        select * from emp_salary
+        <include refid="getSalaryListWhere"></include>
+        limit #{start},#{limit}
+    </select>
+    <select id="countSalaryList" parameterType="com.xlk.common.vo.SalaryQuery" resultType="long">
+        select count(1) from emp_salary
+        <include refid="getSalaryListWhere"></include>
+    </select>
+
+    <insert id="addSalary" parameterType="salary">
+        insert into emp_salary
+        (employee_name,dept_name,creattime,base_salary,ad_salary,end_salary)
+        values
+        (#{employee_name},#{dept_name},#{creattime},#{base_salary},#{ad_salary},#{end_salary})
+    </insert>
+
+    <delete id="deleteSalaryById" parameterType="String">
+        delete from emp_salary where id in (${ids})
+    </delete>
+
+    <select id="queryById" parameterType="int" resultType="salary">
+        select * from emp_salary where id=#{id}
+    </select>
+
+    <update id="updateSalary" parameterType="salary">
+        update emp_salary
+        set creattime=#{creattime},
+        base_salary=#{base_salary},
+        ad_salary=#{ad_salary},
+        end_salary=#{end_salary}
+        where id=#{id}
+    </update>
+
+
+
+    <sql id="getSalaryListWhere">
+        <where>
+            <if test="employee_name!=null and employee_name!=''">
+                employee_name like CONCAT('%',#{employee_name},'%')
+            </if>
+            <if test="creattime!=null and creattime!=''">
+                and creattime=#{creattime}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

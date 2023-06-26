@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.DepartmentMapper">
+    <select id="queryAll" resultType="department">
+        select * from department
+    </select>
+    <select id="queryById" resultType="department">
+        select * from department where id=#{department_id}
+    </select>
+
+    <select id="getDeptList" parameterType="com.xlk.common.vo.DeptQuery" resultType="department">
+        select * from department limit #{start},#{limit}
+    </select>
+    <select id="countDeptList" parameterType="com.xlk.common.vo.DeptQuery" resultType="long">
+        select count(1) from department
+    </select>
+    <insert id="addDept" parameterType="department">
+        insert into department
+        (name,des)
+        values
+        (#{name},#{des})
+    </insert>
+
+    <delete id="deleteDeptById" parameterType="String">
+        delete from department where id in (${ids})
+    </delete>
+
+    <update id="updateDept" parameterType="department">
+        update department set name=#{name},des=#{des} where id=#{id}
+    </update>
+    <select id="countDeptEmployeeNumber" resultType="com.xlk.common.vo.DeptNumber">
+        select a.name,IFNULL(count(b.department_id),0) as number
+        from department as a
+        Left join employee as b
+        on a.id=b.department_id
+        GROUp BY a.name
+    </select>
+</mapper>

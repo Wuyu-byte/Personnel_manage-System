@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.LeaveMapper">
+    <select id="getLeaveList" parameterType="com.xlk.common.vo.LeaveQuery" resultType="leave">
+        select * from emp_leave
+        <include refid="getLeaveListWhere"></include>
+        limit #{start},#{limit}
+    </select>
+
+    <select id="countLeaveList" parameterType="com.xlk.common.vo.LeaveQuery" resultType="long">
+        select count(1) from emp_leave
+        <include refid="getLeaveListWhere"></include>
+    </select>
+
+    <select id="queryLeaveById" parameterType="int" resultType="leave">
+        select * from emp_leave where id=#{id}
+    </select>
+    <update id="updateLeave" parameterType="leave">
+        update emp_leave
+        set status=#{status},
+        oktime=#{oktime},
+        endmessage=#{endmessage}
+        where id=#{id}
+    </update>
+
+    <insert id="addLeave" parameterType="leave">
+         insert into emp_leave
+        (employee_name,leave_message,startDate,endDate,status,subtime)
+        values
+        (#{employee_name},#{leave_message},#{startDate},#{endDate},#{status},#{subtime})
+    </insert>
+
+
+    <sql id="getLeaveListWhere">
+        <where>
+            <if test="employee_name!=null and employee_name!=''">
+                employee_name like CONCAT('%',#{employee_name},'%')
+            </if>
+            <if test="leave_message!=null and leave_message!=''">
+                and leave_message like CONCAT('%',#{leave_message},'%')
+            </if>
+        </where>
+    </sql>
+
+</mapper>

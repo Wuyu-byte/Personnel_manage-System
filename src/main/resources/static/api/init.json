@@ -1,0 +1,206 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/welcome"
+  },
+  "logoInfo": {
+    "title": "XLK_zcx",
+    "image": "images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "常规管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "员工管理",
+          "href": "",
+          "icon": "fa fa-group",
+          "target": "_self",
+          "child": [
+            {
+              "title": "员工列表",
+              "href": "emp",
+              "icon": "fa fa-user",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "部门管理",
+          "href": "",
+          "icon": "fa fa-user",
+          "target": "_self",
+          "child": [
+            {
+              "title": "部门信息",
+              "href": "dept",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+
+        {
+          "title": "职位管理",
+          "href": "",
+          "icon": "fa fa-institution",
+          "target": "_self",
+          "child": [
+            {
+              "title": "职位信息",
+              "href": "level",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+
+        {
+          "title": "薪资管理",
+          "href": "",
+          "icon": "fa fa-btc",
+          "target": "_self",
+          "child": [
+            {
+              "title": "薪资信息",
+              "href": "salary",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "考勤管理",
+          "href": "",
+          "icon": "fa fa-calendar",
+          "target": "_self",
+          "child": [
+            {
+              "title": "考勤信息",
+              "href": "attendance",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "请假管理",
+          "href": "",
+          "icon": "fa fa-bed",
+          "target": "_self",
+          "child": [
+            {
+              "title": "请假信息",
+              "href": "leave",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "奖惩管理",
+          "href": "",
+          "icon": "fa fa-gavel",
+          "target": "_self",
+          "child": [
+            {
+              "title": "奖惩信息",
+              "href": "reward",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "日志管理",
+          "href": "",
+          "icon": "fa fa-gavel",
+          "target": "_self",
+          "child": [
+            {
+              "title": "登陆信息",
+              "href": "log",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "公告管理",
+          "href": "",
+          "icon": "fa fa-navicon",
+          "target": "_self",
+          "child": [
+            {
+              "title": "公告信息",
+              "href": "notice",
+              "icon": "fa fa-list-alt",
+              "target": "_self"
+            }
+          ]
+        },
+
+
+        {
+          "title": "文件下载",
+          "href": "filedDownload",
+          "icon": "fa fa-cloud-download",
+          "target": "_self"
+        },
+        {
+          "title": "文件上传",
+          "href": "fileUpLoad",
+          "icon": "fa fa-cloud-upload",
+          "target": "_self"
+        },
+        {
+          "title": "图表展示",
+          "href": "",
+          "icon": "fa fa-bar-chart",
+          "target": "",
+          "child": [
+            {
+              "title": "部门员工分布表",
+              "href": "chart",
+              "icon": "fa fa-bar-chart",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "疫情防控",
+      "icon": "fa fa-slideshare",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "健康汇报",
+          "href": "health",
+          "icon": "fa fa-heart",
+          "target": "_self"
+        }
+      ]
+    }
+  ,
+    {
+      "title": "其它管理",
+      "icon": "fa fa-slideshare",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "系统性能",
+          "href": "druid/login.html",
+          "icon": "fa fa-superpowers",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

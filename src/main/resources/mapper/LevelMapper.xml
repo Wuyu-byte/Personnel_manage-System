@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.LevelMapper">
+    <select id="queryAll" resultType="level">
+        select * from level
+    </select>
+
+    <select id="queryById" resultType="level" parameterType="string">
+        select * from level where id=#{level_id}
+    </select>
+
+
+    <select id="getLevelList" parameterType="com.xlk.common.vo.LevelQuery" resultType="level">
+        select * from level
+        <include refid="getLevelListWhere"></include>
+         limit #{start},#{limit}
+    </select>
+    <select id="countLevelList" parameterType="com.xlk.common.vo.LevelQuery" resultType="long">
+        select count(1) from level
+        <include refid="getLevelListWhere"></include>
+    </select>
+
+    <insert id="addLevel" parameterType="level">
+        insert into level
+        (name,des,department_name)
+        values
+        (#{name},#{des},#{department_name})
+    </insert>
+
+    <delete id="deleteLevelById" parameterType="String">
+        delete from level where id in (${ids})
+    </delete>
+
+    <update id="updateLevel" parameterType="level">
+        update level set name=#{name},des=#{des},department_name=#{department_name} where id=#{id}
+    </update>
+
+    <select id="queryLevelByDept" resultType="level" parameterType="String">
+        select * from level where department_name=#{department_name}
+    </select>
+
+
+    <sql id="getLevelListWhere">
+        <where>
+            <if test="department_name!=null and department_name!=''">
+                department_name=#{department_name}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

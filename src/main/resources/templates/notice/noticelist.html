@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>公告</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{lib/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="form-search">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">公告信息</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="message" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">发布日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="start_date" autocomplete="off" class="layui-input date">
+                            </div>
+                        </div>
+
+
+
+                        <button  id="btn-search" lay-submit lay-filter="btn-search-filter" type="button"
+                                 class="layui-btn layui-btn-radius layui-btn-normal">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button  id="btn-reset" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                            <i class="layui-icon layui-icon-fonts-clear"></i>
+                            重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add">发布公告</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="notice-table" lay-filter="notice-table-Filter"></table>
+
+        <script type="text/html" id="table-edit">
+<!--            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>-->
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script th:src="@{lib/layui/layui.js}" charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+
+<script>
+    function refreshTable() {
+        $("#form-reset").click();
+        $("#btn-search").click();
+    }
+
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate=layui.laydate,
+            table = layui.table;
+
+        laydate.render({
+            elem: '.date' //指定元素
+        });
+
+
+        table.render({
+            elem: '#notice-table',
+            url: '/notice/list',
+            toolbar: '#toolbarDemo',
+            cols: [
+                [
+                    {type: "checkbox", width: 50},
+                    {field: 'user_name', width: 110, title: '发布者', sort: true, align: "center"},
+                    {field: 'start_date', width: 220, title: '发布日期', align: "center"},
+                    {field: 'message', width: 550, title: '公告信息', align: "center"},
+                    {field: 'create_date', width: 220, title: '发布时间', align: "center"},
+                    {title: '操作', minWidth: 50, toolbar: '#table-edit', align: "center"}
+                ]
+            ],
+            limits: [1, 5, 10, 30, 50, 100],
+            limit: 10,
+            page: true,
+        });
+
+
+        //监听表单提交
+        form.on('submit(btn-search-filter)', function (data) {
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            table.reload('notice-table', {
+                where: { //设定异步数据接口的额外参数，任意设
+                    message: data.field.message,
+                    start_date:data.field.start_date
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    //     /**
+    //      * toolbar监听事件
+    //      */
+        //添加和删除功能
+        table.on('toolbar(notice-table-Filter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '发布公告',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['50%', '60%'],
+                    content: '/notice/NoticeAdd',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+            else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('notice-table'), data = checkStatus.data;
+                if(data.length==0)
+                {
+                    layer.alert("未选中任何数据",{icon:2,anim:6,title:"警告"});
+                    return false;
+                }
+                var idArr=new Array();
+                $(data).each(function () {
+                    idArr.push(this.id);
+                });
+                layer.confirm('请确认删除选中的记录', {icon: 3, title:'确认'}, function (index) {
+                    //异步删除,成功提示,刷新表格
+                    url="[[@{/}]]"+"notice/delete/"+idArr.join(",");
+                    var params={
+                        _method:"DELETE"
+                    }
+                    $.post(url,params,function (res) {
+                        if(res.code==0)
+                        {
+                            layer.msg(res.message,{icon:1,title:"操作结果"});
+                            refreshTable();
+                        }
+                    })
+                    layer.close(index);
+                });
+            }
+        });
+
+
+
+        table.on('tool(notice-table-Filter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'delete') {
+                //提示框
+                layer.confirm('请确认删除该公告吗?', {icon: 3, title:'确认'}, function (index) {
+                    //异步删除,成功提示,刷新表格
+                    url="[[@{/}]]"+"notice/delete/"+data.id;
+                    var params={
+                        _method:"DELETE"
+                    }
+                    $.post(url,params,function (res) {
+                        if(res.code==0)
+                        {
+                            layer.msg(res.message,{icon:1,title:"操作结果"});
+                            refreshTable();
+                        }
+                    })
+
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

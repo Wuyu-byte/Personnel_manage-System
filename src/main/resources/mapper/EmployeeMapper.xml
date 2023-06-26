@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlk.mapper.EmployeeMapper">
+    <resultMap id="empMap" type="employee">
+        <association property="department" column="department_id" javaType="department" select="queryDepartment"/>
+        <association property="level" column="level_id" javaType="level" select="queryLevel"/>
+    </resultMap>
+    <select id="queryDepartment" resultType="department">
+        select * from department where id=#{department_id}
+    </select>
+    <select id="queryLevel" resultType="level">
+        select * from level where id=#{level_id}
+    </select>
+
+    <select id="login" parameterType="employee" resultType="employee">
+        select * from employee where username=#{username}
+    </select>
+
+    <select id="getEmpList" parameterType="com.xlk.common.vo.EmpQuery" resultMap="empMap">
+        select * from employee
+        <include refid="getEmpListWhere"></include>
+        order by id asc
+        limit #{start},#{limit}
+    </select>
+    <select id="countEmpList" parameterType="com.xlk.common.vo.EmpQuery" resultType="long">
+        select count(1) from employee
+        <include refid="getEmpListWhere"></include>
+    </select>
+
+    <select id="queryAll" resultMap="empMap">
+        select * from employee
+    </select>
+
+    <insert id="addEmployee" parameterType="employee">
+        insert into employee
+        (employee_id,name,phone,email,department_id,username,password,age,sex,status,level_id)
+        values
+        (#{employee_id},#{name},#{phone},#{email},#{department.id},#{username},#{password},#{age},#{sex},#{status},#{level.id})
+    </insert>
+
+    <delete id="deleteEmpById" parameterType="String">
+        delete from employee where id in (${ids})
+    </delete>
+
+    <select id="queryEmpById" parameterType="int" resultMap="empMap">
+        select * from employee where id=#{id}
+    </select>
+
+    <update id="updateEmp" parameterType="employee">
+        update employee
+        set name=#{name},
+        phone=#{phone},
+        email=#{email},
+        department_id=#{department.id},
+        username=#{username},
+        password=#{password},
+        age=#{age},
+        sex=#{sex},
+        status=#{status},
+        level_id=#{level.id}
+        where id=#{id}
+    </update>
+
+    <select id="queryEmpByDeptId" parameterType="int" resultMap="empMap">
+        select * from employee where department_id=#{dept_id}
+    </select>
+
+    <update id="updatePassword" parameterType="employee">
+        update employee
+        set password=#{password}
+        where id=#{id}
+    </update>
+
+
+
+
+    <sql id="getEmpListWhere">
+        <where>
+            <if test="name!=null and name!='' ">
+                name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="age!=null and age!=''">
+               and age=#{age}
+            </if>
+            <if test="department_id!=null">
+               and department_id=#{department_id}
+            </if>
+        </where>
+    </sql>
+</mapper>

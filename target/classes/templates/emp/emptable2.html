@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>员工信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{lib/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="form-search">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">员工名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">员工年龄</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="age" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+<!--                        <div class="layui-inline">-->
+<!--                            <label class="layui-form-label">员工部门</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" name="department" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <button  id="btn-search" lay-submit lay-filter="btn-search-filter" type="button"
+                                 class="layui-btn layui-btn-radius layui-btn-normal">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button  id="btn-reset" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                            <i class="layui-icon layui-icon-fonts-clear"></i>
+                            重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="emp-table" lay-filter="emp-table-Filter"></table>
+
+    </div>
+</div>
+<script th:src="@{lib/layui/layui.js}" charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<!--判断性别-->
+<script type="text/html" id="convertSex">
+    {{#
+    if (d.sex == '1') {
+    return '男';
+    } else if (d.sex == '0') {
+    return '女';
+    } else {
+    return '无';
+    }
+    }}
+</script>
+<!--判断状态-->
+<script>
+    function convertStatus(data) {
+        if (data.status == '1') {
+
+            return '<a class="layui-btn layui-btn-xs layui-btn-normal">启用</a>';
+        } else if (data.status == '0') {
+            return '<a class="layui-btn layui-btn-xs layui-btn-danger">禁用</a>';
+        } else {
+            return '无';
+        }
+    }
+
+</script>
+<!--部门转义-->
+<script type="text/html" id="convertDept">
+    {{#
+    return d.department.name;
+    }}
+</script>
+<script type="text/html" id="convertLevel">
+    {{#
+    return d.level.name;
+    }}
+</script>
+
+
+<script>
+    function refreshTable() {
+        $("#form-reset").click();
+        $("#btn-search").click();
+    }
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#emp-table',
+            url: '/emp/list',
+            toolbar: 'false', //#toolbarDemo
+            defaultToolbar:"",
+            cols: [
+                [
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 80, title: 'id', sort: true},
+                    {field: 'employee_id', width: 200, title: '员工id',align: "center"},
+                    {field: 'name', width: 80, title: '姓名', sort: true,align: "center"},
+                    {field: 'phone', width: 120, title: '手机号',align: "center"},
+                    {field: 'email', title: '邮箱', width: 180,align: "center"},
+                    {field: 'department', width: 80, title: '部门',templet: '#convertDept',align: "center"},
+                    {field: 'level', width: 90, title: '职位',templet: '#convertLevel',align: "center"},
+                    {field: 'age', width: 80, title: '年龄', sort: true,align: "center"},
+                    {field: 'sex', midwidth: 60, title: '性别', templet: '#convertSex',align: "center"},
+                ]
+            ],
+            limits: [1, 5, 10, 30, 50, 100],
+            limit: 10,
+            page: true,
+        });
+
+        //监听表单提交
+        form.on('submit(btn-search-filter)', function (data) {
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            table.reload('emp-table', {
+                where: { //设定异步数据接口的额外参数，任意设
+                    name: data.field.name,
+                    age: data.field.age,
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+</script>
+
+</body>
+</html>

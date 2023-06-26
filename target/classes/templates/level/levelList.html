@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>员工级别</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{lib/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="" id="form-search">
+
+<!--                    <div class="layui-form-item">-->
+<!--                        <label class="layui-form-label required">部门</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <select name="dept_id" lay-verify="required">//name="dept_id"-->
+<!--                                <option value="">请选择</option>-->
+<!--                                <option th:each="dept:${deptList}" th:value="${dept.id}" th:selected="${emp.department.id eq dept.id}">-->
+<!--                                    <span th:text="${dept.name}"></span>-->
+<!--                                </option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">部门</label>
+                            <div class="layui-input-block">
+                                <select name="department_name">
+                                    <option value="">请选择</option>
+                                    <option th:each="dept:${deptList}" th:value="${dept.name}" th:text="${dept.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button  id="btn-search" lay-submit lay-filter="btn-search-filter" type="button"
+                                 class="layui-btn layui-btn-radius layui-btn-normal">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button  id="btn-reset" type="reset" class="layui-btn layui-btn-radius layui-btn-primary">
+                            <i class="layui-icon layui-icon-fonts-clear"></i>
+                            重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="level-table" lay-filter="level-table-Filter"></table>
+
+        <script type="text/html" id="table-edit">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script th:src="@{lib/layui/layui.js}" charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+
+
+<script>
+    function refreshTable() {
+        $("#form-reset").click();
+        $("#btn-search").click();
+    }
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#level-table',
+            url: '/level/list',
+            toolbar: '#toolbarDemo',
+            cols: [
+                [
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 80, title: 'id', sort: true,align:"center"},
+                    {field: 'department_name', width: 300, title: '部门名称',align:"center"},
+                    {field: 'name', width: 300, title: '职位名称',align:"center"},
+                    {field: 'des', width: 300, title: '职位描述',align:"center"},
+                    {title: '操作', minWidth: 50, toolbar: '#table-edit', align: "center"}
+                ]
+            ],
+            limits: [1, 5, 10, 30, 50, 100],
+            limit: 10,
+            page: true,
+        });
+
+        //数据显示OK
+        form.on('submit(btn-search-filter)', function (data) {
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            table.reload('level-table', {
+                where: { //设定异步数据接口的额外参数，任意设
+                    department_name:data.field.department_name
+                }
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+    //     /**
+    //      * toolbar监听事件
+    //      */
+        //添加和删除功能
+        table.on('toolbar(level-table-Filter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加职位',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['40%', '70%'],
+                    content: '/level/levelAdd',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('level-table'), data = checkStatus.data;
+                if(data.length==0)
+                {
+                    layer.alert("未选中任何数据",{icon:2,anim:6,title:"警告"});
+                    return false;
+                }
+                var idArr=new Array();
+                $(data).each(function () {
+                    idArr.push(this.id);
+                });
+                layer.confirm('请确认删除选中的记录', {icon: 3, title:'确认'}, function (index) {
+                    //异步删除,成功提示,刷新表格
+                    url="[[@{/}]]"+"level/delete/"+idArr.join(",");
+                    var params={
+                        _method:"DELETE"
+                    }
+                    $.post(url,params,function (res) {
+                        if(res.code==0)
+                        {
+                            layer.msg(res.message,{icon:1,title:"操作结果"});
+                            refreshTable();
+                        }
+                    })
+                    layer.close(index);
+                });
+            }
+        });
+        //新增与删除结束
+        //
+
+
+
+        table.on('tool(level-table-Filter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑部位',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['40%', '70%'],
+                    content: '/level/'+data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+            //单个员工的删除功能
+            else if (obj.event === 'delete') {
+                //提示框
+                layer.confirm('请确认删除该职位吗:'+data.name+" ?", {icon: 3, title:'确认'}, function (index) {
+                    //异步删除,成功提示,刷新表格
+                    url="[[@{/}]]"+"level/delete/"+data.id;
+                    var params={
+                        _method:"DELETE"
+                    }
+                    $.post(url,params,function (res) {
+                        if(res.code==0)
+                        {
+                            layer.msg(res.message,{icon:1,title:"操作结果"});
+                            refreshTable();
+                        }
+                    })
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
